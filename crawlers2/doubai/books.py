@@ -37,24 +37,30 @@ for i in tag: #遍历所有满足tag的xpath的路径, i也是xpath
             page_url = "https://book.douban.com/tag/%s?start=%d&type=T" % (n, num)
             print page_url
 
-            #每页上查找图书及对应的评分
-
+            #每页上查找图书及对应的评分并存到列表list中
             r = requests.get(page_url).content
             sel = html.fromstring(r)
 
-            #将子分类中的图书和评分存到列表list中
-            sublist = sel.xpath('//ul[@class="subject-list"]/li[@class="subject-item"]')
+            sublist = sel.xpath('//ul[@class="subject-list"]/li[@class="subject-item"]') #选中了每本书的区域
             list = []
             for a in sublist:
-                books = a.xpath('div[@class="info"]/h2[@class=""]/a/text()')
-                books_name = books[0].replace(" ", "").replace("\n", "")
+                books1 = a.xpath('div[@class="info"]/h2[@class=""]/a/text()')
+                # books2 = ""
+                # if dr
+                # books2 = a.xpath('div[@class="info"]/h2[@class=""]/a/span/text()')
+                # book_name = books1 + books2
+                books_name = books1[0].replace(" ", "").replace("\n", "")
                 score_path = a.xpath('div[@class="info"]/div[@class="star clearfix"]/span[@class="rating_nums"]/text()')
-                # score = float(score_path[0])
-                list2 = [books_name, score_path[0]]
+                score = float(score_path[0])
+                list2 = (books_name, score)
                 list.append(list2) #不能写成list = list.append(list2)
-            print str(list).decode('unicode-escape').replace('u','')
 
+                #按图片的评分排序
+                list3 = sorted(list,key=lambda sortedlist:sortedlist[1], reverse=True) #用sorted()可以对列表中多个域的数据成员进行排序，list是要排序的列表名，key=lambda, sortedlist是自定义的一个临时列表，[1]表示用数据成员的第二个域来排序,reverse=True实现降序，但前面一定要有逗号
+            print str(list3).decode('unicode-escape').replace('u', '')
 
+            #按评分排序
+            #写入excel
 
 
 
